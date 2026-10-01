@@ -1,5 +1,5 @@
-# Позволяет запускать файл напрямую как скрипт через ./justfile <команда>
 #!/usr/bin/env -S just --justfile
+# Shebang Позволяет запускать файл напрямую как скрипт через ./justfile <команда>
 
 # Быстрый алиас для запуска тестов (теперь можно писать `just t`)
 alias t := test
@@ -20,22 +20,17 @@ default:
 run +args='':
     @cargo run {{ args }}
 
-# Собрать дебаг-бинарник
-[group: 'dev']
-build:
-    @cargo build
-
-# Быстрая проверка: cargo check + clippy
+# Быстрая проверка: cargo clippy (check will be run by clippy)
 [group: 'dev']
 check:
-    @cargo check && cargo clippy
+    @cargo clippy
 
 # Форматировать код
 [group: 'dev']
 fmt:
     @cargo fmt
 
-# Запустить тестов (принимает фильтр, например: just test my_func)
+# Run the tests (принимает фильтр, например: just test my_func)
 [group: 'dev']
 test +args='':
     @cargo test {{ args }}
@@ -46,13 +41,24 @@ test +args='':
 
 # Полная проверка CI — формат, строгий линтинг и тесты
 [group: 'check']
-ci: fmt
+ci:
+    @cargo fmt --check
     @cargo clippy -- -D warnings
     @cargo test
 
 # ==================================================================================== #
 # BUILD
 # ==================================================================================== #
+
+# Собрать дебаг-бинарник
+[group: 'build']
+build:
+    @cargo build
+
+# Release
+[group: 'build']
+release:
+    @cargo build --release
 
 # Очистить артефакты сборки
 [group: 'misc']
